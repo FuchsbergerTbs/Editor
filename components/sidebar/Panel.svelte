@@ -5,6 +5,7 @@
   let y;
   let width;
   let height;
+  let layout;
   export let node;
 
   const submit = (e, xKey) => {
@@ -26,6 +27,17 @@
           case "height":
             $nodes.get(node).transformation.height.value = Number(height.value);
             height.blur();
+            return $nodes;
+          case "layout":
+            if ($nodes.get(node).layout === "Grid") {
+              $nodes.get(node).transformation.height.auto = true;
+            } else {
+              $nodes.get(node).transformation.height.auto = false;
+            }
+            $nodes.get(node).layout = layout.value;
+            // add function to store to get dimensions of array of nodes
+            // if layout gets changed to Frame return those dimensions as transformations
+            layout.blur();
             return $nodes;
         }
       });
@@ -64,7 +76,8 @@
     font-weight: 600;
     font-size: 11px;
   }
-  input {
+  input,
+  select {
     flex: 1;
     width: 100%;
     font-family: "Inter";
@@ -73,8 +86,10 @@
     border-radius: 0;
     outline: none;
     border: 1px rgba(0, 0, 0, 0) solid;
+    appearance: none;
   }
-  input:hover {
+  input:hover,
+  select:hover {
     border: 1px black solid;
   }
 </style>
@@ -115,6 +130,21 @@
         on:blur={(e, height) => submit(e, "height")}
         on:keyup|preventDefault={(e, height) => submit(e, "height")}
         value={$nodes.get(node).transformation.height.value}>
+    </div>
+    <div class="formGroup">
+      <small>WH</small>
+      <select
+        bind:this={layout}
+        on:focus={() => $inputFocused = true}
+        on:blur={(e, layout) => submit(e, "layout")}
+        on:keyup|preventDefault={(e, layout) => submit(e, "layout")}
+        value={$nodes.get(node).layout}>
+        {#each ["Frame", "Grid"] as l}
+          <option value={l}>
+          {l}
+          </option>
+        {/each}
+      </select>
     </div>
   </div>
 {/if}

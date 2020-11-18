@@ -5,10 +5,24 @@
   export let index;
   export let parent;
   export let layout;
+  export let parentLayout;
   export let transformation;
 
+  $: if (
+    $nodes.get(index).transformation.x.value !== 0 &&
+    $nodes.has(parent) &&
+    parentLayout === "Grid"
+  ) {
+    console.log(parentLayout);
+    nodes.update(() => {
+      $nodes.get(index).transformation.x.value = 0;
+      $nodes.get(index).transformation.y.value = 0;
+      return $nodes;
+    });
+  }
+
   const handlePanMove = e => {
-    if (layout === "frame") {
+    if (!$nodes.has(parent) || $nodes.get(parent).layout === "Frame") {
       if (!$selectedNodes.includes(index)) {
         nodes.update(() => {
           $nodes.get(index).transformation.x.value += e.detail.x;
@@ -28,18 +42,21 @@
   };
 
   const addNode = () => {
+    console.log(layout);
     nodes.addNode(
       {
         parent: index,
-        layout: "grid",
+        layout: "Grid",
         transformation: {
           x: { value: 0, type: "px" },
           y: { value: 0, type: "px" },
           width: {
+            auto: false,
             value: 50,
             type: "%"
           },
           height: {
+            auto: true,
             value: 50,
             type: "%"
           }
@@ -85,13 +102,12 @@
   on:panmove|stopPropagation={handlePanMove}
   class="node"
   class:selected={$selectedNodes.includes(index)}
-  style="
-    position: {layout === "grid" ? "relative" : "absolute"};
-    width: {transformation.width.value + transformation.width.type};
-    height: {transformation.height.value + transformation.height.type};
+  style="position: {parentLayout === "Grid" ? "relative" : "absolute"};
+    width: {transformation.width.auto ? "auto" : transformation.width.value + transformation.width.type};
+    height: {transformation.height.auto ? "auto" : transformation.height.value + transformation.height.type};
     transform: translate({transformation.x.value + transformation.x.type}, {transformation.y.value + transformation.y.type})">
     <div class="add" on:click={addNode}>+</div>
     {#each [...$nodes.entries()].filter(n => n[1].parent === index && n[1].parent !== -1) as [i, node]}
-        <svelte:self index={i} parent={index} layout={node.layout} transformation={node.transformation} />
+        <svelte:self index={i} parent={index} layout={node.layout} parentLayout={layout} transformation={node.transformation} />
     {/each}
 </div>
