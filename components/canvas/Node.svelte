@@ -90,7 +90,7 @@
   style="position: {parentLayout === "Grid" ? transformation.position = "relative" : "absolute"};
     width: {transformation.width.value + transformation.width.type};
     height: {layout === "Grid" ? "auto" : transformation.height.value + transformation.height.type};
-    transform: translate({transformation.position === "absolute" ? transformation.x.value + transformation.x.type : 0}, {transformation.position === "absolute" ? transformation.y.value + transformation.y.type : 0})">
+    transform: translate({parentLayout === "Frame" ? transformation.x.value + transformation.x.type : 0}, {parentLayout === "Frame" ? transformation.y.value + transformation.y.type : 0})">
     <div class="add" on:click={addNode}>+</div>
     {#each [...$nodes.entries()].filter(n => n[1].parent === index && n[1].parent !== -1) as [i, node]}
         <svelte:self index={i} parent={index} layout={node.layout} parentLayout={layout} transformation={node.transformation} />

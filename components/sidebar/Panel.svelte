@@ -30,13 +30,6 @@
             return $nodes;
           case "layout":
             $nodes.get(node).layout = layout.value;
-            if (layout.value === "Grid") {
-              $nodes.get(node).transformation.height.auto = true;
-            } else {
-              $nodes.get(node).transformation.height.auto = false;
-            }
-            // add function to store to get dimensions of array of nodes
-            // if layout gets changed to Frame return those dimensions as transformations
             layout.blur();
             return $nodes;
         }
