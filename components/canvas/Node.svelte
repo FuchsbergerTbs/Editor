@@ -60,14 +60,14 @@
 </script>
 
 <style>
-  div {
+  .node {
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     position: absolute;
     box-shadow: inset 0 0 0 1px black;
   }
-  div:hover {
+  .node:hover {
     box-shadow: inset 0 0 0 2px blue;
     color: blue;
   }
@@ -75,17 +75,28 @@
     box-shadow: inset 0 0 0 1px blue;
     color: blue;
   }
+  .add {
+    max-width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+  }
 </style>
 
 <div
 	use:pannable
   on:click|stopPropagation={() => selectedNodes.selectNode(index)}
   on:panmove|stopPropagation={handlePanMove}
+  class="node"
   class:selected={$selectedNodes.includes(index)}
   style="width: {transformation.width.value + transformation.width.type};
     height: {transformation.height.value + transformation.height.type};
     transform: translate({transformation.x.value + transformation.x.type}, {transformation.y.value + transformation.y.type})">
-    <button on:click={addNode}>Add child</button>
+    <div class="add" on:click={addNode}>+</div>
     {#each [...$nodes.entries()].filter(n => n[1].parent === index && n[1].parent !== -1) as [i, node]}
         <svelte:self index={i} parent={index} transformation={node.transformation} />
     {/each}

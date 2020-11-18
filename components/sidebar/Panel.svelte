@@ -81,7 +81,7 @@
 
 {#if $selectedNodes.length > 0}
   <div class="node">
-    <label for="position">Node Nr.</label>
+    <label for="position">Node Nr. {node}</label>
     <div class="formGroup">
       <small>XY</small>
       <input
