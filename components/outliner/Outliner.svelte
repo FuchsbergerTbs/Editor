@@ -6,10 +6,7 @@
     nodes.addNode(
       {
         parent: -1,
-        layout: {
-          type: "frame",
-          padding: 0
-        },
+        layout: "frame",
         transformation: {
           x: { value: Math.round(Math.random() * 800), type: "px" },
           y: { value: Math.round(Math.random() * 400), type: "px" },
