@@ -8,15 +8,14 @@
         parent: -1,
         layout: "Frame",
         transformation: {
+          position: "absolute",
           x: { value: Math.round(Math.random() * 800), type: "px" },
           y: { value: Math.round(Math.random() * 400), type: "px" },
           width: {
-            auto: false,
             value: Math.round(Math.random() * (400 - 40) + 40),
             type: "px"
           },
           height: {
-            auto: false,
             value: Math.round(Math.random() * (400 - 40) + 40),
             type: "px"
           }

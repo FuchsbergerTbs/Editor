@@ -29,12 +29,12 @@
             height.blur();
             return $nodes;
           case "layout":
-            if ($nodes.get(node).layout === "Grid") {
+            $nodes.get(node).layout = layout.value;
+            if (layout.value === "Grid") {
               $nodes.get(node).transformation.height.auto = true;
             } else {
               $nodes.get(node).transformation.height.auto = false;
             }
-            $nodes.get(node).layout = layout.value;
             // add function to store to get dimensions of array of nodes
             // if layout gets changed to Frame return those dimensions as transformations
             layout.blur();

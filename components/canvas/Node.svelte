@@ -8,19 +8,6 @@
   export let parentLayout;
   export let transformation;
 
-  $: if (
-    $nodes.get(index).transformation.x.value !== 0 &&
-    $nodes.has(parent) &&
-    parentLayout === "Grid"
-  ) {
-    console.log(parentLayout);
-    nodes.update(() => {
-      $nodes.get(index).transformation.x.value = 0;
-      $nodes.get(index).transformation.y.value = 0;
-      return $nodes;
-    });
-  }
-
   const handlePanMove = e => {
     if (!$nodes.has(parent) || $nodes.get(parent).layout === "Frame") {
       if (!$selectedNodes.includes(index)) {
@@ -42,23 +29,21 @@
   };
 
   const addNode = () => {
-    console.log(layout);
     nodes.addNode(
       {
         parent: index,
-        layout: "Grid",
+        layout: "Frame",
         transformation: {
+          position: "absolute",
           x: { value: 0, type: "px" },
           y: { value: 0, type: "px" },
           width: {
-            auto: false,
-            value: 50,
-            type: "%"
+            value: 100,
+            type: "px"
           },
           height: {
-            auto: true,
-            value: 50,
-            type: "%"
+            value: 100,
+            type: "px"
           }
         }
       },
@@ -102,10 +87,10 @@
   on:panmove|stopPropagation={handlePanMove}
   class="node"
   class:selected={$selectedNodes.includes(index)}
-  style="position: {parentLayout === "Grid" ? "relative" : "absolute"};
-    width: {transformation.width.auto ? "auto" : transformation.width.value + transformation.width.type};
-    height: {transformation.height.auto ? "auto" : transformation.height.value + transformation.height.type};
-    transform: translate({transformation.x.value + transformation.x.type}, {transformation.y.value + transformation.y.type})">
+  style="position: {parentLayout === "Grid" ? transformation.position = "relative" : "absolute"};
+    width: {transformation.width.value + transformation.width.type};
+    height: {layout === "Grid" ? "auto" : transformation.height.value + transformation.height.type};
+    transform: translate({transformation.position === "absolute" ? transformation.x.value + transformation.x.type : 0}, {transformation.position === "absolute" ? transformation.y.value + transformation.y.type : 0})">
     <div class="add" on:click={addNode}>+</div>
     {#each [...$nodes.entries()].filter(n => n[1].parent === index && n[1].parent !== -1) as [i, node]}
         <svelte:self index={i} parent={index} layout={node.layout} parentLayout={layout} transformation={node.transformation} />
