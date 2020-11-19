@@ -7,6 +7,13 @@
   } from "../../stores.js";
   import Node from "./Node.svelte";
 
+  let layout = {
+    type: "Frame",
+    direction: undefined,
+    padding: 0,
+    margin: 0
+  };
+
   const handleKeydown = e => {
     // BACKSPACE
     if (!$inputFocused && e.keyCode === 8) {
@@ -59,6 +66,6 @@
 <svelte:window on:keyup={handleKeyup} on:keydown={handleKeydown}/>
 <div class="canvas" on:click|stopPropagation={deselectNodes}>
   {#each [...$nodes.entries()].filter(n => n[1].parent === -1) as [i, node]}
-      <Node index={i} parent={-1} layout={node.layout} parentLayout={"Frame"} transformation={node.transformation} />
+      <Node node={node} index={i} parent={-1} layout={node.layout} parentLayout={layout} transformation={node.transformation} />
   {/each}
 </div>

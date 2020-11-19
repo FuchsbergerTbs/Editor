@@ -8,9 +8,9 @@ function nodesMap(map) {
       return nodes;
     });
   };
-  const updateNode = (node, nodeKey) => {
+  const updateNode = (nodeKey, state) => {
     update((nodes) => {
-      map.set(nodeKey, node);
+      map.set(nodeKey, state);
       return nodes;
     });
   };
@@ -49,12 +49,13 @@ function selected(selectedNodes) {
   return { subscribe, update, set, selectNode };
 }
 
-export const keysPressed = writable([]);
+export const nodesCount = writable(0);
+export const nodes = nodesMap(new Map([]));
+export const selectedNodes = selected([]);
 
+export const keysPressed = writable([]);
 export const inputFocused = writable(false);
 
-export const nodesCount = writable(0);
-
-export const nodes = nodesMap(new Map([]));
-
-export const selectedNodes = selected([]);
+// https://www.gavsblog.com/blog/find-closest-number-in-array-javascript
+// export const xGuides = writable([]);
+// export const yGuides = writable([]);

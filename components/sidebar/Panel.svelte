@@ -10,6 +10,7 @@
 
   const submit = (e, xKey) => {
     if ($selectedNodes.length > 0 && (e.type === "blur" || e.keyCode === 13)) {
+      // Change to use nodes.updateNode() function
       nodes.update(n => {
         switch (xKey) {
           case "x":
@@ -29,7 +30,7 @@
             height.blur();
             return $nodes;
           case "layout":
-            $nodes.get(node).layout = layout.value;
+            $nodes.get(node).layout.type = layout.value;
             layout.blur();
             return $nodes;
         }
@@ -125,14 +126,14 @@
         value={$nodes.get(node).transformation.height.value}>
     </div>
     <div class="formGroup">
-      <small>WH</small>
+      <small>L</small>
       <select
         bind:this={layout}
         on:focus={() => $inputFocused = true}
         on:blur={(e, layout) => submit(e, "layout")}
         on:keyup|preventDefault={(e, layout) => submit(e, "layout")}
-        value={$nodes.get(node).layout}>
-        {#each ["Frame", "Grid"] as l}
+        value={$nodes.get(node).layout.type}>
+        {#each ["Frame", "Stack"] as l}
           <option value={l}>
           {l}
           </option>

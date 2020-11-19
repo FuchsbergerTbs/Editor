@@ -7,22 +7,19 @@
   export let layout;
   export let parentLayout;
   export let transformation;
+  export let node;
 
   const handlePanMove = e => {
-    if (!$nodes.has(parent) || $nodes.get(parent).layout === "Frame") {
+    if (!$nodes.has(parent) || $nodes.get(parent).layout.type === "Frame") {
       if (!$selectedNodes.includes(index)) {
-        nodes.update(() => {
-          $nodes.get(index).transformation.x.value += e.detail.x;
-          $nodes.get(index).transformation.y.value += e.detail.y;
-          return $nodes;
-        });
+        transformation.x.value += e.detail.x;
+        transformation.y.value += e.detail.y;
+        nodes.updateNode(index, node);
       } else {
         $selectedNodes.map(s => {
-          nodes.update(() => {
-            $nodes.get(s).transformation.x.value += e.detail.x;
-            $nodes.get(s).transformation.y.value += e.detail.y;
-            return $nodes;
-          });
+          $nodes.get(s).transformation.x.value += e.detail.x;
+          $nodes.get(s).transformation.y.value += e.detail.y;
+          nodes.updateNode(s, $nodes.get(s));
         });
       }
     }
@@ -32,7 +29,12 @@
     nodes.addNode(
       {
         parent: index,
-        layout: "Frame",
+        layout: {
+          type: "Frame",
+          direction: undefined,
+          padding: 0,
+          margin: 0
+        },
         transformation: {
           position: "absolute",
           x: { value: 0, type: "px" },
@@ -87,12 +89,12 @@
   on:panmove|stopPropagation={handlePanMove}
   class="node"
   class:selected={$selectedNodes.includes(index)}
-  style="position: {parentLayout === "Grid" ? transformation.position = "relative" : "absolute"};
+  style="position: {parentLayout.type === "Stack" ? transformation.position = "relative" : "absolute"};
     width: {transformation.width.value + transformation.width.type};
-    height: {layout === "Grid" ? "auto" : transformation.height.value + transformation.height.type};
-    transform: translate({parentLayout === "Frame" ? transformation.x.value + transformation.x.type : 0}, {parentLayout === "Frame" ? transformation.y.value + transformation.y.type : 0})">
+    height: {layout.type === "Stack" ? "auto" : transformation.height.value + transformation.height.type};
+    transform: translate({parentLayout.type === "Frame" ? transformation.x.value + transformation.x.type : 0}, {parentLayout.type === "Frame" ? transformation.y.value + transformation.y.type : 0})">
     <div class="add" on:click={addNode}>+</div>
-    {#each [...$nodes.entries()].filter(n => n[1].parent === index && n[1].parent !== -1) as [i, node]}
-        <svelte:self index={i} parent={index} layout={node.layout} parentLayout={layout} transformation={node.transformation} />
+    {#each [...$nodes.entries()].filter(n => n[1].parent === index && n[1].parent !== -1) as [i, childNode]}
+        <svelte:self index={i} node={childNode} parent={index} layout={childNode.layout} parentLayout={layout} transformation={childNode.transformation} />
     {/each}
 </div>
