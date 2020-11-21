@@ -1,5 +1,18 @@
 import { writable, get } from "svelte/store";
 
+// Recursively delete children, by giving array of nodeKeys
+let arr = [];
+const recursiveDelete = (nodeKeys, nodes) => {
+  arr = [...arr, ...nodeKeys];
+  let children = [...nodes.entries()]
+    .filter((k) => nodeKeys.includes(k[1].parent))
+    .map((n) => n[0]);
+  if (nodeKeys && nodeKeys.length > 0) {
+    recursiveDelete(children, nodes);
+  }
+  return arr;
+};
+
 function nodesMap(map) {
   const { subscribe, update, set } = writable(map);
   const addNode = (node, nodeKey) => {
@@ -8,19 +21,27 @@ function nodesMap(map) {
       return nodes;
     });
   };
+  const removeNodes = (nodeKeys) => {
+    update((nodes) => {
+      recursiveDelete(nodeKeys, nodes).map((d) => map.delete(d));
+      return nodes;
+    });
+  };
   const updateNode = (nodeKey, state) => {
     update((nodes) => {
       map.set(nodeKey, state);
       return nodes;
     });
+    return nodes;
   };
-  const removeNodes = (nodeKeys) => {
-    update((nodes) => {
-      nodeKeys.map((k) => map.delete(k));
-      return nodes;
-    });
+  return {
+    set,
+    update,
+    subscribe,
+    addNode,
+    updateNode,
+    removeNodes
   };
-  return { set, update, subscribe, addNode, updateNode, removeNodes };
 }
 
 function selected(selectedNodes) {

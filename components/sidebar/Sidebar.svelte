@@ -23,6 +23,6 @@
 
 <div class="sidebar">
   {#each $selectedNodes as s}
-    <Panel node={s} />
+    <Panel parentNodeKey={$nodes.get(s).parentNode} node={$nodes.get(s)} nodeKey={s} />
   {/each}
 </div>

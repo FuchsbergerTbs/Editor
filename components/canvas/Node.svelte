@@ -9,6 +9,15 @@
   export let transformation;
   export let node;
 
+  // For Stack check clientHeight and clientWidth instead of transformations
+  $: if (
+    node.nodeRef &&
+    layout.type === "Stack" &&
+    layout.direction === undefined
+  ) {
+    transformation.height.value = node.nodeRef.clientHeight;
+  }
+
   const handlePanMove = e => {
     if (!$nodes.has(parent) || $nodes.get(parent).layout.type === "Frame") {
       if (!$selectedNodes.includes(index)) {
@@ -51,6 +60,7 @@
       },
       $nodesCount
     );
+    console.log($nodes);
     $nodesCount++;
   };
 </script>
@@ -62,6 +72,8 @@
     box-sizing: border-box;
     position: absolute;
     box-shadow: inset 0 0 0 1px black;
+    background-image: url("https://images.unsplash.com/photo-1605718665998-85fbd49c5eff?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80");
+    background-size: cover;
   }
   .node:hover {
     box-shadow: inset 0 0 0 2px blue;
@@ -72,8 +84,11 @@
     color: blue;
   }
   .add {
-    max-width: 32px;
-    height: 32px;
+    position: absolute;
+    right: 0;
+    margin-top: -24px;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -84,17 +99,25 @@
 </style>
 
 <div
+  bind:this={node.nodeRef}
 	use:pannable
   on:click|stopPropagation={() => selectedNodes.selectNode(index)}
   on:panmove|stopPropagation={handlePanMove}
   class="node"
   class:selected={$selectedNodes.includes(index)}
-  style="position: {parentLayout.type === "Stack" ? transformation.position = "relative" : "absolute"};
+  style="
+    position: {parentLayout.type === "Stack" ? transformation.position = "relative" : "absolute"};
     width: {transformation.width.value + transformation.width.type};
     height: {layout.type === "Stack" ? "auto" : transformation.height.value + transformation.height.type};
     transform: translate({parentLayout.type === "Frame" ? transformation.x.value + transformation.x.type : 0}, {parentLayout.type === "Frame" ? transformation.y.value + transformation.y.type : 0})">
     <div class="add" on:click={addNode}>+</div>
     {#each [...$nodes.entries()].filter(n => n[1].parent === index && n[1].parent !== -1) as [i, childNode]}
-        <svelte:self index={i} node={childNode} parent={index} layout={childNode.layout} parentLayout={layout} transformation={childNode.transformation} />
+        <svelte:self
+          index={i}
+          node={childNode}
+          parent={index}
+          layout={childNode.layout}
+          parentLayout={layout}
+          transformation={childNode.transformation} />
     {/each}
 </div>

@@ -6,7 +6,9 @@
   let width;
   let height;
   let layout;
+
   export let node;
+  export let nodeKey;
 
   const submit = (e, xKey) => {
     if ($selectedNodes.length > 0 && (e.type === "blur" || e.keyCode === 13)) {
@@ -14,24 +16,35 @@
       nodes.update(n => {
         switch (xKey) {
           case "x":
-            $nodes.get(node).transformation.x.value = Number(x.value);
+            $nodes.get(nodeKey).transformation.x.value = Number(x.value);
             x.blur();
             return $nodes;
           case "y":
-            $nodes.get(node).transformation.y.value = Number(y.value);
+            $nodes.get(nodeKey).transformation.y.value = Number(y.value);
             y.blur();
             return $nodes;
           case "width":
-            $nodes.get(node).transformation.width.value = Number(width.value);
+            $nodes.get(nodeKey).transformation.width.value = Number(width.value);
             width.blur();
             return $nodes;
           case "height":
-            $nodes.get(node).transformation.height.value = Number(height.value);
+            $nodes.get(nodeKey).transformation.height.value = Number(
+              height.value
+            );
             height.blur();
             return $nodes;
           case "layout":
-            $nodes.get(node).layout.type = layout.value;
+            node.layout.type = layout.value;
             layout.blur();
+            nodes.updateNode(nodeKey, node);
+            [...$nodes.entries()]
+              .filter(n => n[1].parent === nodeKey)
+              .map(([key, childNode]) => {
+                if (childNode.nodeRef) {
+                  childNode.transformation.x.value = childNode.nodeRef.offsetLeft;
+                  childNode.transformation.y.value = childNode.nodeRef.offsetTop;
+                }
+              });
             return $nodes;
         }
       });
@@ -90,7 +103,7 @@
 
 {#if $selectedNodes.length > 0}
   <div class="node">
-    <label for="position">Node Nr. {node}</label>
+    <label for="position">Node Nr. {nodeKey}</label>
     <div class="formGroup">
       <small>XY</small>
       <input
@@ -99,14 +112,14 @@
         on:focus={() => $inputFocused = true}
         on:blur={(e, x) => submit(e, "x")}
         on:keyup|preventDefault={(e, x) => submit(e, "x")}
-        value={$nodes.get(node).transformation.x.value}>
+        value={$nodes.get(nodeKey).transformation.x.value}>
       <input
         type="number"
         bind:this={y}
         on:focus={() => $inputFocused = true}
         on:blur={(e, y) => submit(e, "y")}
         on:keyup|preventDefault={(e, y) => submit(e, "y")}
-        value={$nodes.get(node).transformation.y.value}>
+        value={$nodes.get(nodeKey).transformation.y.value}>
     </div>
     <div class="formGroup">
       <small>WH</small>
@@ -116,14 +129,14 @@
         on:focus={() => $inputFocused = true}
         on:blur={(e, width) => submit(e, "width")}
         on:keyup|preventDefault={(e, width) => submit(e, "width")}
-        value={$nodes.get(node).transformation.width.value}>
+        value={node.transformation.width.value}>
       <input
         type="number"
         bind:this={height}
         on:focus={() => $inputFocused = true}
         on:blur={(e, height) => submit(e, "height")}
         on:keyup|preventDefault={(e, height) => submit(e, "height")}
-        value={$nodes.get(node).transformation.height.value}>
+        value={node.transformation.height.value}>
     </div>
     <div class="formGroup">
       <small>L</small>
@@ -132,10 +145,10 @@
         on:focus={() => $inputFocused = true}
         on:blur={(e, layout) => submit(e, "layout")}
         on:keyup|preventDefault={(e, layout) => submit(e, "layout")}
-        value={$nodes.get(node).layout.type}>
-        {#each ["Frame", "Stack"] as l}
-          <option value={l}>
-          {l}
+        value={node.layout.type}>
+        {#each ["Frame", "Stack"] as option}
+          <option value={option}>
+          {option}
           </option>
         {/each}
       </select>

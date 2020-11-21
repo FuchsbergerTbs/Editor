@@ -66,6 +66,12 @@
 <svelte:window on:keyup={handleKeyup} on:keydown={handleKeydown}/>
 <div class="canvas" on:click|stopPropagation={deselectNodes}>
   {#each [...$nodes.entries()].filter(n => n[1].parent === -1) as [i, node]}
-      <Node node={node} index={i} parent={-1} layout={node.layout} parentLayout={layout} transformation={node.transformation} />
+      <Node
+        node={node}
+        index={i}
+        parent={-1}
+        layout={node.layout}
+        parentLayout={layout}
+        transformation={node.transformation} />
   {/each}
 </div>
